@@ -1,3 +1,33 @@
 
 /* Add your own custom styles here */
 
+#TabsToolbar, #toolbar-menubar, #nav-bar, #PersonalToolbar {
+  background-color: var(--lwt-accent-color) !important;
+}
+
+.tab-content {
+  background-color: var(--lwt-accent-color) !important;
+  filter: brightness(150%);
+  border-radius: 8px;
+}
+
+.tabbrowser-tab[selected] > .tab-stack > .tab-content {
+  filter: brightness(200%);
+}
+
+
+#urlbar #urlbar-input-container {
+	background-color: var(--lwt-accent-color) !important;
+  filter: brightness(150%);
+  border-radius: 8px;
+}
+:root:-moz-window-inactive #urlbar #urlbar-input-container {
+  background: var(--lwt-accent-color) !important;
+}
+:root:-moz-window-inactive #TabsToolbar,
+:root:-moz-window-inactive #toolbar-menubar,
+:root:-moz-window-inactive #nav-bar,
+:root:-moz-window-inactive #PersonalToolbar {
+  background-color: var(--lwt-accent-color) !important;
+  filter: brightness(80%);
+}
