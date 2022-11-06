@@ -1,12 +1,22 @@
 
 /* Add your own custom styles here */
 
-#TabsToolbar, #toolbar-menubar, #nav-bar, #PersonalToolbar {
+#TabsToolbar,
+#toolbar-menubar,
+#nav-bar,
+#PersonalToolbar,
+#commonDialog,
+#urlbar #urlbar-input-container,
+:root:-moz-window-inactive #urlbar #urlbar-input-container,
+:root:-moz-window-inactive #TabsToolbar,
+:root:-moz-window-inactive #toolbar-menubar,
+:root:-moz-window-inactive #nav-bar,
+:root:-moz-window-inactive #PersonalToolbar,
+.tab-content {
   background-color: var(--lwt-accent-color) !important;
 }
 
 .tab-content {
-  background-color: var(--lwt-accent-color) !important;
   filter: brightness(150%);
   border-radius: 8px;
 }
@@ -17,17 +27,17 @@
 
 
 #urlbar #urlbar-input-container {
-	background-color: var(--lwt-accent-color) !important;
   filter: brightness(150%);
   border-radius: 8px;
 }
-:root:-moz-window-inactive #urlbar #urlbar-input-container {
-  background: var(--lwt-accent-color) !important;
-}
+
 :root:-moz-window-inactive #TabsToolbar,
 :root:-moz-window-inactive #toolbar-menubar,
 :root:-moz-window-inactive #nav-bar,
 :root:-moz-window-inactive #PersonalToolbar {
-  background-color: var(--lwt-accent-color) !important;
   filter: brightness(80%);
+}
+
+.tab-icon-image {
+  filter: brightness(67%);
 }
