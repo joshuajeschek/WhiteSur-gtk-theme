@@ -12,6 +12,7 @@
 :root:-moz-window-inactive #toolbar-menubar,
 :root:-moz-window-inactive #nav-bar,
 :root:-moz-window-inactive #PersonalToolbar,
+#customizationui-widget-panel > *,
 .tab-content {
   background-color: var(--lwt-accent-color) !important;
 }
