@@ -13,7 +13,7 @@
 ###############################################################################
 
 readonly REPO_DIR="$(dirname "$(readlink -m "${0}")")"
-source "${REPO_DIR}/lib-install.sh"
+source "${REPO_DIR}/shell/lib-install.sh"
 
 # Customization, default values
 colors=("${COLOR_VARIANTS[@]}")
@@ -143,7 +143,7 @@ if [[ "${uninstall}" == 'true' ]]; then
   else
     prompt -i "Removing '${name}' gtk themes in '${dest}'... \n"
     prompt -w "REMOVAL: Non file-related parameters will be ignored. \n"
-    remove_themes
+    remove_themes; remove_libadwaita
     prompt -s "Done! All '${name}' gtk themes in has been removed."
   fi
 
@@ -158,11 +158,11 @@ else
     show_needed_dialogs
   fi
 
-  prompt -w "Removing the old '${name}${colorscheme}' themes..."
+  prompt -w "Removing the old '${name}${colorscheme}' themes...\n"
 
-  remove_themes; customize_theme; avoid_variant_duplicates; echo
+  remove_themes; customize_theme; avoid_variant_duplicates;
 
-  prompt -w "Installing '${name}${colorscheme}' themes in '${dest}'..."; echo
+  prompt -w "Installing '${name}${colorscheme}' themes in '${dest}'...\n";
 
   prompt -t "--->>> GTK | GNOME Shell | Cinnamon | Metacity | XFWM | Plank <<<---"
   prompt -i "Color variants   : $( IFS=';'; echo "${colors[*]}" )"
@@ -200,7 +200,7 @@ else
 
   echo; prompt -w "${final_msg}"
 
-  if [[ -x /usr/bin/notify-send && "$UID" != '0' ]]; then
+  if has_command notify-send && [[ "$UID" != '0' ]]; then
     notify-send "'${name}' theme has been installed. Enjoy!" "${notif_msg}" -i "dialog-information-symbolic"
   fi
 fi

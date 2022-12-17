@@ -8,8 +8,8 @@
 #                                VARIABLES                                    #
 ###############################################################################
 
-source "${REPO_DIR}/lib-core.sh"
-source "${REPO_DIR}/lib-flatpak.sh"
+source "${REPO_DIR}/shell/lib-core.sh"
+source "${REPO_DIR}/shell/lib-flatpak.sh"
 WHITESUR_SOURCE+=("lib-install.sh")
 
 ###############################################################################
@@ -154,32 +154,74 @@ prepare_xbps() {
 #-----------------Deps-----------------#
 
 install_theme_deps() {
-  if ! has_command glib-compile-resources || ! has_command sassc || ! has_command xmllint; then
-    prompt -w "DEPS: 'glib2.0', 'sassc', and 'xmllint' are required for theme installation."
+  if ! has_command sassc; then
+    prompt -w "DEPS: 'sassc' are required for theme installation."
     prepare_deps
 
     if has_command zypper; then
-      sudo zypper in -y sassc glib2-devel libxml2-tools
+      sudo zypper in -y sassc
     elif has_command swupd; then
-      # Rolling release
-      prepare_swupd && sudo swupd bundle-add libglib libxml2 && install_swupd_packages sassc libsass
+      prepare_swupd && install_swupd_packages sassc libsass
     elif has_command apt; then
-      prepare_install_apt_packages sassc libglib2.0-dev-bin libxml2-utils
+      prepare_install_apt_packages sassc
     elif has_command dnf; then
-      sudo dnf install -y sassc glib2-devel libxml2
+      sudo dnf install -y sassc
     elif has_command yum; then
-      sudo yum install -y sassc glib2-devel libxml2
+      sudo yum install -y sassc
     elif has_command pacman; then
-      # Rolling release
-      sudo pacman -Syyu --noconfirm --needed sassc glib2 libxml2
+      sudo pacman -Syyu --noconfirm --needed sassc
     elif has_command xbps-install; then
-      # Rolling release
-      # 'libxml2' is already included here, and it's gonna broke the installation
-      # if you add it
-      prepare_xbps && sudo xbps-install -Sy sassc glib-devel
+      prepare_xbps && sudo xbps-install -Sy sassc
     elif has_command eopkg; then
-      # Rolling release
-      sudo eopkg -y upgrade; sudo eopkg -y install sassc glib2 libxml2
+      sudo eopkg -y upgrade; sudo eopkg -y install sassc
+    else
+      installation_sorry
+    fi
+  fi
+
+  if ! has_command glib-compile-resources; then
+    prompt -w "DEPS: 'glib2.0' are required for theme installation."
+    prepare_deps
+
+    if has_command zypper; then
+      sudo zypper in -y glib2-devel
+    elif has_command swupd; then
+      prepare_swupd && sudo swupd bundle-add libglib
+    elif has_command apt; then
+      prepare_install_apt_packages libglib2.0-dev-bin
+    elif has_command dnf; then
+      sudo dnf install -y glib2-devel
+    elif has_command yum; then
+      sudo yum install -y glib2-devel
+    elif has_command pacman; then
+      sudo pacman -Syyu --noconfirm --needed glib2
+    elif has_command xbps-install; then
+      prepare_xbps && sudo xbps-install -Sy glib-devel
+    elif has_command eopkg; then
+      sudo eopkg -y upgrade; sudo eopkg -y install glib2
+    else
+      installation_sorry
+    fi
+  fi
+
+  if ! has_command xmllint; then
+    prompt -w "DEPS: 'xmllint' are required for theme installation."
+    prepare_deps
+
+    if has_command zypper; then
+      sudo zypper in -y libxml2-tools
+    elif has_command swupd; then
+      prepare_swupd && sudo swupd bundle-add libxml2
+    elif has_command apt; then
+      prepare_install_apt_packages sassc libxml2-utils
+    elif has_command dnf; then
+      sudo dnf install -y libxml2
+    elif has_command yum; then
+      sudo yum install -y libxml2
+    elif has_command pacman; then
+      sudo pacman -Syyu --noconfirm --needed libxml2
+    elif has_command eopkg; then
+      sudo eopkg -y upgrade; sudo eopkg -y install libxml2
     else
       installation_sorry
     fi
@@ -194,7 +236,6 @@ install_beggy_deps() {
     if has_command zypper; then
       sudo zypper in -y ImageMagick
     elif has_command swupd; then
-      # Rolling release
       prepare_swupd && sudo swupd bundle-add ImageMagick
     elif has_command apt; then
       prepare_install_apt_packages imagemagick
@@ -203,13 +244,10 @@ install_beggy_deps() {
     elif has_command yum; then
       sudo yum install -y ImageMagick
     elif has_command pacman; then
-      # Rolling release
       sudo pacman -Syyu --noconfirm --needed imagemagick
     elif has_command xbps-install; then
-      # Rolling release
       prepare_xbps && sudo xbps-install -Sy ImageMagick
     elif has_command eopkg; then
-      # Rolling release
       sudo eopkg -y upgrade; sudo eopkg -y install imagemagick
     else
       installation_sorry
@@ -227,7 +265,6 @@ install_dialog_deps() {
     if has_command zypper; then
       sudo zypper in -y dialog
     elif has_command swupd; then
-      # Rolling release
       prepare_swupd && install_swupd_packages dialog
     elif has_command apt; then
       prepare_install_apt_packages dialog
@@ -236,13 +273,10 @@ install_dialog_deps() {
     elif has_command yum; then
       sudo yum install -y dialog
     elif has_command pacman; then
-      # Rolling release
       sudo pacman -Syyu --noconfirm --needed dialog
     elif has_command xbps-install; then
-      # Rolling release
       prepare_xbps && sudo xbps-install -Sy dialog
     elif has_command eopkg; then
-      # Rolling release
       sudo eopkg -y upgrade; sudo eopkg -y install dialog
     else
       installation_sorry
@@ -258,7 +292,6 @@ install_flatpak_deps() {
     if has_command zypper; then
       sudo zypper in -y libostree appstream-glib
     elif has_command swupd; then
-      # Rolling release
       prepare_swupd && sudo swupd ostree libappstream-glib
     elif has_command apt; then
       prepare_install_apt_packages ostree appstream-util
@@ -267,15 +300,10 @@ install_flatpak_deps() {
     elif has_command yum; then
       sudo yum install -y ostree libappstream-glib
     elif has_command pacman; then
-      # Rolling release
       sudo pacman -Syyu --noconfirm --needed ostree appstream-glib
     elif has_command xbps-install; then
-      # Rolling release
-      # 'libxml2' is already included here, and it's gonna broke the installation
-      # if you add it
       prepare_xbps && sudo xbps-install -Sy ostree appstream-glib
     elif has_command eopkg; then
-      # Rolling release
       sudo eopkg -y upgrade; sudo eopkg -y ostree appstream-glib
     else
       installation_sorry
@@ -725,7 +753,10 @@ install_dash_to_dock() {
   fi
 
   udo cp -rf "${DASH_TO_DOCK_SRC_DIR}/dash-to-dock@micxgx.gmail.com"   "${GNOME_SHELL_EXTENSION_DIR}"
-  udo dbus-launch dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme true
+
+  if has_command dbus-launch; then
+    udo dbus-launch dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme true
+  fi
 }
 
 install_dash_to_dock_theme() {
@@ -748,7 +779,9 @@ install_dash_to_dock_theme() {
     fi
   fi
 
-  udo dbus-launch dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme true
+  if has_command dbus-launch; then
+    udo dbus-launch dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme true
+  fi
 }
 
 revert_dash_to_dock_theme() {
@@ -758,7 +791,9 @@ revert_dash_to_dock_theme() {
     restore_file "${DASH_TO_DOCK_DIR_ROOT}/stylesheet.css" "sudo"
   fi
 
-  udo dbus-launch dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme false
+  if has_command dbus-launch; then
+    udo dbus-launch dconf write /org/gnome/shell/extensions/dash-to-dock/apply-custom-theme false
+  fi
 }
 
 ###############################################################################
@@ -791,21 +826,21 @@ disconnect_flatpak() {
   done
 }
 
-connect_snap() {
-  sudo snap install whitesur-gtk-theme
+#connect_snap() {
+#  sudo snap install whitesur-gtk-theme
 
-  for i in $(snap connections | grep gtk-common-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
-    sudo snap connect "${i}:gtk-3-themes" "whitesur-gtk-theme:gtk-3-themes"
-    sudo snap connect "${i}:icon-themes" "whitesur-gtk-theme:icon-themes"
-  done
-}
+#  for i in $(snap connections | grep gtk-common-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
+#    sudo snap connect "${i}:gtk-3-themes" "whitesur-gtk-theme:gtk-3-themes"
+#    sudo snap connect "${i}:icon-themes" "whitesur-gtk-theme:icon-themes"
+#  done
+#}
 
-disconnect_snap() {
-  for i in $(snap connections | grep gtk-common-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
-    sudo snap disconnect "${i}:gtk-3-themes" "whitesur-gtk-theme:gtk-3-themes"
-    sudo snap disconnect "${i}:icon-themes" "whitesur-gtk-theme:icon-themes"
-  done
-}
+#disconnect_snap() {
+#  for i in $(snap connections | grep gtk-common-themes | awk '{print $2}' | cut -f1 -d: | sort -u); do
+#    sudo snap disconnect "${i}:gtk-3-themes" "whitesur-gtk-theme:gtk-3-themes"
+#    sudo snap disconnect "${i}:icon-themes" "whitesur-gtk-theme:icon-themes"
+#  done
+#}
 
 #########################################################################
 #                               GTK BASE                                #
@@ -837,69 +872,69 @@ customize_theme() {
 
   # Darker dark colors
   if [[ "${colorscheme}" == '-nord' ]]; then
-    prompt -s "Changing color scheme style to nord style ..."
+    prompt -s "Changing color scheme style to nord style ...\n"
     sed $SED_OPT "/\$colorscheme/s/default/nord/"                                "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Darker dark colors
   if [[ "${darker}" == 'true' ]]; then
-    prompt -s "Changing dark color style to darker one ..."
+    prompt -s "Changing dark color style to darker one ...\n"
     sed $SED_OPT "/\$darker/s/false/true/"                                      "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change Nautilus sidarbar size
   if [[ "${sidebar_size}" != 'default' ]]; then
-    prompt -s "Changing Nautilus sidebar size ... \n"
+    prompt -s "Changing Nautilus sidebar size ...\n"
     sed $SED_OPT "/\$sidebar_size/s/200px/${sidebar_size}px/"                   "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change Nautilus style
   if [[ "${nautilus_style}" != 'stable' ]]; then
-    prompt -s "Changing Nautilus style ..."
+    prompt -s "Changing Nautilus style ...\n"
     sed $SED_OPT "/\$nautilus_style/s/stable/${nautilus_style}/"                "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change Nautilus titlebutton placement style
   if [[ "${right_placement}" == 'true' ]]; then
-    prompt -s "Changing Nautilus titlebutton placement style ..."
+    prompt -s "Changing Nautilus titlebutton placement style ...\n"
     sed $SED_OPT "/\$placement/s/left/right/"                                   "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change maximized window radius
   if [[ "${max_round}" == 'true' ]]; then
-    prompt -s "Changing maximized window style ..."
+    prompt -s "Changing maximized window style ...\n"
     sed $SED_OPT "/\$max_window_style/s/square/round/"                          "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change gnome-shell panel transparency
   if [[ "${panel_opacity}" != 'default' ]]; then
-    prompt -s "Changing panel transparency ..."
+    prompt -s "Changing panel transparency ...\n"
     sed $SED_OPT "/\$panel_opacity/s/0.15/0.${panel_opacity}/"                  "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change gnome-shell panel height size
   if [[ "${panel_size}" != 'default' ]]; then
-    prompt -s "Changing panel height size to '${panel_size}'..."
+    prompt -s "Changing panel height size to '${panel_size}'...\n"
     sed $SED_OPT "/\$panel_size/s/default/${panel_size}/"                       "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change gnome-shell show apps button style
   if [[ "${showapps_normal}" == 'true' ]]; then
-    prompt -s "Changing gnome-shell show apps button style ..."
+    prompt -s "Changing gnome-shell show apps button style ...\n"
     sed $SED_OPT "/\$showapps_button/s/bigsur/normal/"                          "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change panel font color
   if [[ "${monterey}" == 'true' ]]; then
     black_font="true"
-    prompt -s "Changing to Monterey style ..."
+    prompt -s "Changing to Monterey style ...\n"
     sed $SED_OPT "/\$monterey/s/false/true/"                                    "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
     sed $SED_OPT "/\$panel_opacity/s/0.15/0.5/"                                 "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
   # Change panel font color
   if [[ "${black_font}" == 'true' ]]; then
-    prompt -s "Changing panel font color ..."
+    prompt -s "Changing panel font color ...\n"
     sed $SED_OPT "/\$panel_font/s/white/black/"                                 "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 
@@ -909,7 +944,7 @@ customize_theme() {
   fi
 
   if [[ "${scale}" == 'x2' ]]; then
-    prompt -s "Changing GDM scaling to 200% ..."
+    prompt -s "Changing GDM scaling to 200% ...\n"
     sed $SED_OPT "/\$scale/s/default/x2/"                                       "${THEME_SRC_DIR}/sass/_theme-options-temp.scss"
   fi
 }
